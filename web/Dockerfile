@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-MAINTAINER David Gwizdala
+MAINTAINER Team 1
 RUN apt-get update && apt-get install -y \
 	git \
 	python3.4 \

@@ -1,11 +1,7 @@
-import connexion
-from swagger_server.models.body import Body
-from swagger_server.models.error import Error
-from swagger_server.models.problem import Problem
-from datetime import date, datetime
-from typing import List, Dict
-from six import iteritems
-from ..util import deserialize_date, deserialize_datetime
+from . import utilities
+
+client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+db = client.path_db
 
 
 def delete_problem(problem_id):
