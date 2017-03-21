@@ -18,7 +18,6 @@ def delete_problem(problem_id):
     else:
         return get_status(200, "Successfully Deleted")
 
-
 def get_problem(problem_id):
     """
     Problems
@@ -63,3 +62,18 @@ def update_problem(problem_id, version, problem):
         return jsonify(new_version)
     except ValueError:
         return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+def get_specific_key(problem_id, version, key):
+    """
+    Specific Key
+    Returns a specific key in the body of the most updated problem 
+    :param problem_id: The id of the problem being manipulated
+    :type problem_id: int
+    :param version: The version of the problem being manipulated
+    :type version: int
+    :param key: The key within the body of the problem being manipulated
+    :type key: str
+
+    :rtype: Body
+    """
+    return jsonify({"test":1})
