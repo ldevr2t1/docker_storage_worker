@@ -1,4 +1,6 @@
 import connexion
+import json
+import os
 from swagger_server.models.error import Error
 from swagger_server.models.problem import Problem
 from datetime import date, datetime
@@ -6,6 +8,21 @@ from typing import List, Dict
 from six import iteritems
 from ..util import deserialize_date, deserialize_datetime
 
+from flask import jsonify
+from flask.ext.api import status
+from pymongo import MongoClient
+
+#____FOR DOCKER______
+#client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+#____________________
+
+#____FOR LOCAL_______
+client = MongoClient()
+#_____________________
+
+db = client.path_db
+def insert_json(uid, version, body):
+    db.posts.insert_one({"problem_id": str(uid), "version": str(version), "body":body})
 
 def add_problem(problem):
     """
@@ -16,9 +33,25 @@ def add_problem(problem):
 
     :rtype: int
     """
-    if connexion.request.is_json:
+    try:
+        print(problem)
+        str_body = str(problem).replace('\'', '\"')
+        print(str_body)
+        json.loads('{"test": 1}')
+        print("after_problem")
         problem = Problem.from_dict(connexion.request.get_json())
-    return 'do some magic!'
+        db_size = db.posts.count()+1
+        print("after_connexion")
+        for i in range(1, db_size):
+            if(db.posts.find_one({"uid":str(i)}) == None):
+                insert_json(i, 0, problem)
+                return jsonify({"uid": i})
+            print(i)
+        create_json(db_size, 0, problem)
+        return jsonify({"uid": i})
+    except ValueError:
+        print("error")
+        return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def get_problems():
