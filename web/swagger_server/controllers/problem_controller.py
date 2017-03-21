@@ -19,22 +19,6 @@ def delete_problem(problem_id):
     """
     return 'do some magic!'
 
-def get_specific_key(problem_id, version, key):
-    """
-    Specific Key
-    Returns a specific key in the body of the most updated problem 
-    :param problem_id: The id of the problem being manipulated
-    :type problem_id: int
-    :param version: The version of the problem being manipulated
-    :type version: int
-    :param key: The key within the body of the problem being manipulated
-    :type key: str
-
-    :rtype: Body
-    """
-    return jsonify({"test":1})
-
-
 def get_problem(problem_id):
     """
     Problems
@@ -63,3 +47,18 @@ def update_problem(problem_id, version, problem):
     if connexion.request.is_json:
         problem = Body.from_dict(connexion.request.get_json())
     return 'do some magic!'
+
+def get_specific_key(problem_id, version, key):
+    """
+    Specific Key
+    Returns a specific key in the body of the most updated problem 
+    :param problem_id: The id of the problem being manipulated
+    :type problem_id: int
+    :param version: The version of the problem being manipulated
+    :type version: int
+    :param key: The key within the body of the problem being manipulated
+    :type key: str
+
+    :rtype: Body
+    """
+    return jsonify({"test":1})
