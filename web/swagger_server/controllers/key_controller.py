@@ -20,4 +20,4 @@ def get_specific_key(problem_id, version, key):
 
     :rtype: Body
     """
-    return jsonify({"test":1})
+    return jsonify({"test":2})
