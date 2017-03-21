@@ -1,4 +1,6 @@
 import connexion
+import json
+import os
 from swagger_server.models.error import Error
 from swagger_server.models.problem import Problem
 from datetime import date, datetime
@@ -9,10 +11,13 @@ from ..util import deserialize_date, deserialize_datetime
 from flask import jsonify
 from flask.ext.api import status
 from pymongo import MongoClient
-from flask.ext.api import status
 
+#____FOR DOCKER______
+#client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+#____________________
 
-client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+#____FOR LOCAL_______
+client = MongoClient()
 db = client.path_db
 
 def create_json(uid, version, body):
@@ -41,11 +46,10 @@ def delete_problem(problem_id):
 
     :rtype: None
     """
-    if db.posts.delete_manfrom pymongo import MongoClient({"problem_id": str(problem_id)}).deleted_count == 0:
+    if db.posts.delete_many({"uid": str(uid)}).deleted_count == 0:
         return get_status(404, "NOT FOUND"), status.HTTP_404_NOT_FOUND
     else:
         return get_status(200, "Successfully Deleted")
-
 def get_problem(problem_id):
     """
     Problems
