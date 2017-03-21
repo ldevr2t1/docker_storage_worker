@@ -1,0 +1,224 @@
+---
+swagger: "2.0"
+info:
+  description: "Stores and Retrieves information needed"
+  version: "2.0.0"
+  title: "Team 1 Storage API"
+host: "ec2-54-202-25-115.us-west-2.compute.amazonaws.com:8000"
+basePath: "/v2"
+schemes:
+- "http"
+paths:
+  /:
+    get:
+      tags:
+      - "Problems"
+      summary: "Problems"
+      description: "Returns a list of all of the Problems generated. This can be an\
+        \ empty list.\n"
+      operationId: "get_problems"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters: []
+      responses:
+        200:
+          description: "An array of Problem IDs"
+          schema:
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.problems_controller"
+    post:
+      tags:
+      - "Problems"
+      summary: "Creates a new problem and returns a problemID with default version\
+        \ 0"
+      description: ""
+      operationId: "add_problem"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "problem"
+        description: "Problem object that needs to be updated."
+        required: true
+        schema:
+          $ref: "#/definitions/Problem"
+      responses:
+        200:
+          description: "The id of the new problem generated"
+          schema:
+            type: "integer"
+            format: "int32"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "swagger_server.controllers.problems_controller"
+  /id={problem_id}/:
+    get:
+      tags:
+      - "Problem"
+      summary: "Problems"
+      description: "Returns most updated problem\n"
+      operationId: "get_problem"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "problem_id"
+        in: "path"
+        description: "The id of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "A Problem type, containing all values"
+          schema:
+            $ref: "#/definitions/Problem"
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+    delete:
+      tags:
+      - "Problem"
+      summary: "Delete Problem"
+      description: "This removes the problem by the given ID\n"
+      operationId: "delete_problem"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "problem_id"
+        in: "path"
+        description: "The id of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Delete Successful"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Problem not found"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+  /id={problem_id}/ver={version}/:
+    put:
+      tags:
+      - "Problem"
+      summary: "Update the existing problem"
+      description: ""
+      operationId: "update_problem"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "problem_id"
+        in: "path"
+        description: "The id of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "version"
+        in: "path"
+        description: "The version of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      - in: "body"
+        name: "problem"
+        description: "Problem object that needs to be updated."
+        required: true
+        schema:
+          $ref: "#/definitions/Body"
+      responses:
+        200:
+          description: "The new version number for the problem"
+          schema:
+            type: "integer"
+            format: "int32"
+        404:
+          description: "Problem not found"
+        405:
+          description: "Validation exception"
+          schema:
+            type: "integer"
+            format: "int32"
+            description: "latest version number"
+        500:
+          description: "Incorrect JSON"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+  /id={problem_id}/ver={version}/key={key}:
+    get:
+      tags:
+      - "Key"
+      summary: "Specific Key"
+      description: "Returns a specific key in the body of the most updated problem\n"
+      operationId: "get_specific_key"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "problem_id"
+        in: "path"
+        description: "The id of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "version"
+        in: "path"
+        description: "The version of the problem being manipulated"
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "key"
+        in: "path"
+        description: "The key within the body of the problem being manipulated"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "A value from a specific key"
+          schema:
+            $ref: "#/definitions/Body"
+        default:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+definitions:
+  Body:
+    type: "object"
+  Problem:
+    type: "object"
+    properties:
+      version:
+        type: "integer"
+        format: "int32"
+      body:
+        $ref: "#/definitions/Body"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      fields:
+        type: "string"
