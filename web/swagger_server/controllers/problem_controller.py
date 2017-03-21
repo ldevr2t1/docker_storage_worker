@@ -1,5 +1,5 @@
 from . import utilities
-
+from pymongo import MongoClient
 client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
 db = client.path_db
 
@@ -13,7 +13,7 @@ def delete_problem(problem_id):
 
     :rtype: None
     """
-    if db.posts.delete_many({"problem_id": str(problem_id)}).deleted_count == 0:
+    if db.posts.delete_manfrom pymongo import MongoClient({"problem_id": str(problem_id)}).deleted_count == 0:
         return get_status(404, "NOT FOUND"), status.HTTP_404_NOT_FOUND
     else:
         return get_status(200, "Successfully Deleted")
