@@ -1,17 +1,18 @@
-import connexion
 import json
 import os
-from flask import jsonify
-from flask.ext.api import status
+import connexion
 from swagger_server.models.error import Error
-#from swagger_server.models.generic_object import GenericObject
-#from swagger_server.models.uid_info import UidInfo
+from swagger_server.models.problem import Problem
 from datetime import date, datetime
 from typing import List, Dict
 from six import iteritems
 from ..util import deserialize_date, deserialize_datetime
+
+from flask import jsonify
+from flask.ext.api import status
 from pymongo import MongoClient
 from flask.ext.api import status
+
 
 def create_json(uid, version, body):
 	#gotta check if the body is valid jsonc
