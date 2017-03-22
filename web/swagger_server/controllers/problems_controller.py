@@ -22,6 +22,7 @@ client = MongoClient()
 
 db = client.path_db
 def insert_json(uid, version, body):
+	print("in function")
     db.posts.insert_one({"problem_id": str(uid), "version": str(version), "body":body})
 
 def add_problem(problem):
@@ -61,4 +62,11 @@ def get_problems():
 
     :rtype: List[int]
     """
-    return 'do some magic!'
+    array = []
+    for post in db.posts.find({}, {"problem_id": 1}):
+    	array.append(post)
+    #run a check to see if the uid exists
+    if array.len == 0:
+    	return get_status(404, "No problems found"), status.HTTP_404_NOT_FOUND
+    #if the uid doesn't exist then just go ahead return error status
+    return jsonify(array)
