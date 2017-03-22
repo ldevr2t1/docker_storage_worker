@@ -53,7 +53,7 @@ paths:
         description: "Problem object that needs to be updated."
         required: true
         schema:
-          $ref: "#/definitions/Problem"
+          $ref: "#/definitions/Body"
       responses:
         200:
           description: "The id of the new problem generated"

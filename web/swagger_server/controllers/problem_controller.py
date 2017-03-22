@@ -1,26 +1,11 @@
 import connexion
-import json
-import os
+from swagger_server.models.body import Body
 from swagger_server.models.error import Error
 from swagger_server.models.problem import Problem
 from datetime import date, datetime
 from typing import List, Dict
 from six import iteritems
 from ..util import deserialize_date, deserialize_datetime
-
-from flask import jsonify
-from flask.ext.api import status
-from pymongo import MongoClient
-
-#____FOR DOCKER______
-#client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'],27017)
-#____________________
-
-#____FOR LOCAL_______
-client = MongoClient()
-#_____________________
-
-db = client.path_db
 
 
 def delete_problem(problem_id):
@@ -32,10 +17,9 @@ def delete_problem(problem_id):
 
     :rtype: None
     """
-    if db.posts.delete_many({"uid": str(uid)}).deleted_count == 0:
-        return get_status(404, "NOT FOUND"), status.HTTP_404_NOT_FOUND
-    else:
-        return get_status(200, "Successfully Deleted")
+    return 'do some magic!'
+
+
 def get_problem(problem_id):
     """
     Problems
@@ -45,13 +29,7 @@ def get_problem(problem_id):
 
     :rtype: Problem
     """
-    ret_object = db.posts.find_one({"problem_id": str(problem_id)})
-    #run a check to see if the uid exists
-    if ret_object is None:
-        return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
-    #if the uid doesn't exist then just go ahead return error status
-    ret_object.pop('problem_id', 0)
-    return jsonify(ret_object)
+    return 'do some magic!'
 
 
 def update_problem(problem_id, version, problem):
@@ -67,19 +45,9 @@ def update_problem(problem_id, version, problem):
 
     :rtype: int
     """
-    #this checks if incoming data is valid json and for valid uid
-    try:
-        str_body = str(problem).replace('\'', '\"')
-        json.loads(str_body)
-        #update the version
-        new_version = version + 1
-        body = GenericObject.from_dict(connexion.request.get_json())
-        if db.posts.find_one_and_update({"problem_id":str(uid), "version": str(version)}, {"$set": {"body": body, "version": new_version}}) is None:
-            return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
-        #need to write better messages to return for a success
-        return jsonify(new_version)
-    except ValueError:
-        return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
+    if connexion.request.is_json:
+        problem = Body.from_dict(connexion.request.get_json())
+    return 'do some magic!'
 
 def get_specific_key(problem_id, version, key):
     """
@@ -94,4 +62,4 @@ def get_specific_key(problem_id, version, key):
 
     :rtype: Body
     """
-    return jsonify({"test":1})
+    return 'do some magic!'
