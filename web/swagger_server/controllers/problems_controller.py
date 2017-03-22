@@ -39,7 +39,7 @@ def add_problem(problem):
         str_body = str(problem.decode("utf-8")).replace('\'', '\"')
         json.loads(str_body)
         db_size = db.posts.count()+1
-        #print("after_problem")
+        print(str_body)
         problem = Body.from_dict(connexion.request.get_json())
         for i in range(1, db_size):
             if(db.posts.find_one({"problem_id":str(i)}) == None):
