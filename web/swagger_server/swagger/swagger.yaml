@@ -25,10 +25,7 @@ paths:
         200:
           description: "An array of Problem IDs"
           schema:
-            type: "array"
-            items:
-              type: "integer"
-              format: "int32"
+            $ref: "#/definitions/get_pid"
         default:
           description: "Unexpected error"
           schema:
@@ -202,6 +199,14 @@ paths:
             $ref: "#/definitions/Error"
       x-swagger-router-controller: "swagger_server.controllers.problem_controller"
 definitions:
+  get_pid:
+    type: "object"
+    properties:
+      problem_id:
+        type: "array"
+        items:
+              type: "integer"
+              format: "int32"
   Body:
     type: "object"
   Problem:

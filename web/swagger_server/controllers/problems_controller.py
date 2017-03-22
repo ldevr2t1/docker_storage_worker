@@ -61,4 +61,12 @@ def get_problems():
 
     :rtype: List[int]
     """
-    return 'do some magic!'
+    array = []
+    for post in db.posts.distinct("problem_id"):
+        print(post)
+        array.append(int(post))
+    #run a check to see if the uid exists
+    if len(array) == 0:
+        return get_status(404, "No problems found"), status.HTTP_404_NOT_FOUND
+    #if the uid doesn't exist then just go ahead return error status
+    return jsonify({"problem_id": array})
