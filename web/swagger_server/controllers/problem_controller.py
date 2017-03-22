@@ -1,6 +1,7 @@
 import connexion
 import json
 import os
+import flask
 from swagger_server.models.body import Body
 from swagger_server.models.error import Error
 from swagger_server.models.problem import Problem
@@ -48,7 +49,7 @@ def delete_problem(problem_id):
 
     :rtype: None
     """
-    if db.posts.delete_many({"uid": str(uid)}).deleted_count == 0:
+    if db.posts.delete_many({"problem_id": str(problem_id)}).deleted_count == 0:
         return get_status(404, "NOT FOUND"), status.HTTP_404_NOT_FOUND
     else:
         return get_status(200, "Successfully Deleted")
@@ -96,9 +97,18 @@ def update_problem(problem_id, version, problem):
         new_version = version + 1
         problem = Body.from_dict(connexion.request.get_json())
         print("after body")
-        if db.posts.find_one_and_update({"problem_id":str(uid), "version": version}, {"$set": {"body": problem, "version": new_version}}) is None:
-            print("in if")
-            return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+        ret_object = db.posts.find_one({"problem_id": str(problem_id)})
+        print("after ret_obj")
+        if ret_object is None:
+        	print("1")
+        	return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+        elif ret_object['version'] != version:
+        	print("2")
+        	return jsonify({"version": ret_object['version']}), status.HTTP_412_PRECONDITION_FAILED
+        else:
+        	print("3")
+        	db.posts.find_one_and_update({"problem_id":str(problem_id), "version": version}, {"$set": {"body": problem, "version": new_version}})
+
         print("after if")
 		#need to write better messages to return for a success
         return jsonify({"version": new_version})

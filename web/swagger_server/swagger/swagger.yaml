@@ -147,16 +147,13 @@ paths:
         200:
           description: "The new version number for the problem"
           schema:
-            type: "integer"
-            format: "int32"
+            $ref: "#/definitions/Version"
         404:
           description: "Problem not found"
-        405:
+        412:
           description: "Validation exception"
           schema:
-            type: "integer"
-            format: "int32"
-            description: "latest version number"
+            $ref: "#/definitions/Version"
         500:
           description: "Incorrect JSON"
       x-swagger-router-controller: "swagger_server.controllers.problem_controller"
@@ -217,6 +214,12 @@ definitions:
         format: "int32"
       body:
         $ref: "#/definitions/Body"
+  Version:
+    type: "object"
+    properties:
+      version:
+        type: "integer"
+        format: "int32"
   Error:
     type: "object"
     properties:

@@ -1,6 +1,7 @@
 import connexion
 import json
 import os
+import flask
 from swagger_server.models.body import Body
 from swagger_server.models.error import Error
 from datetime import date, datetime
@@ -45,12 +46,12 @@ def add_problem(problem):
             if(db.posts.find_one({"problem_id":str(i)}) == None):
                 insert_json(i, 0, problem)
                 return jsonify({"problem_id": i})
-            #print(i)
+            print(i)
         insert_json(db_size, 0, problem)
         #print("out of func")
         return jsonify({"problem_id": db_size})
     except ValueError:
-        #print("error")
+        print("error")
         return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
