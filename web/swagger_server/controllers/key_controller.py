@@ -5,7 +5,7 @@ from datetime import date, datetime
 from typing import List, Dict
 from six import iteritems
 from ..util import deserialize_date, deserialize_datetime
-import json
+
 
 def get_specific_key(problem_id, version, key):
     """
@@ -20,4 +20,4 @@ def get_specific_key(problem_id, version, key):
 
     :rtype: Body
     """
-    return jsonify({"test":2})
+    return 'do some magic!'

@@ -2,8 +2,8 @@
 
 from __future__ import absolute_import
 
+from swagger_server.models.body import Body
 from swagger_server.models.error import Error
-from swagger_server.models.problem import Problem
 from . import BaseTestCase
 from six import BytesIO
 from flask import json
@@ -18,7 +18,7 @@ class TestProblemsController(BaseTestCase):
 
         Creates a new problem and returns a problemID with default version 0
         """
-        problem = Problem()
+        problem = Body()
         response = self.client.open('/v2/',
                                     method='POST',
                                     data=json.dumps(problem),
