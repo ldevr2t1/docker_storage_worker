@@ -23,7 +23,7 @@ client = MongoClient()
 db = client.path_db
 
 def insert_json(uid, version, body):
-    print("inside func")
+    #print("inside func")
     db.posts.insert_one({"problem_id": str(uid), "version": version, "body":body})
 
 def add_problem(problem):
@@ -39,18 +39,18 @@ def add_problem(problem):
         str_body = str(problem.decode("utf-8")).replace('\'', '\"')
         json.loads(str_body)
         db_size = db.posts.count()+1
-        print("after_problem")
+        #print("after_problem")
         problem = Body.from_dict(connexion.request.get_json())
         for i in range(1, db_size):
             if(db.posts.find_one({"problem_id":str(i)}) == None):
                 insert_json(i, 0, problem)
                 return jsonify({"problem_id": i})
-            print(i)
+            #print(i)
         insert_json(db_size, 0, problem)
-        print("out of func")
+        #print("out of func")
         return jsonify({"problem_id": db_size})
     except ValueError:
-        print("error")
+        #print("error")
         return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
