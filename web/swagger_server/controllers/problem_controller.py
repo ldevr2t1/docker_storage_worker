@@ -137,4 +137,4 @@ def get_specific_key(problem_id, version, key):
     value = ret_object['body'][key]
     if value is None:
         return get_status(405, "Invalid Key")
-    return jsonify(value)
+    return jsonify({key: value})
