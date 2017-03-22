@@ -23,11 +23,11 @@ db = client.path_db
 
 def create_json(uid, version, body):
     #gotta check if the body is valid jsonc
-    return jsonify({"problem_id":str(uid), "version": str(version), "body":str(body)})
+    return jsonify({"problem_id":str(uid), "version": version, "body": body})
 
 
 def insert_json(uid, version, body):
-    db.posts.insert_one({"problem_id": str(uid), "version": str(version), "body":body})
+    db.posts.insert_one({"problem_id": str(uid), "version": version, "body":body})
 
 
 def get_status(status, message):
@@ -50,7 +50,7 @@ def delete_problem(problem_id):
         return get_status(404, "NOT FOUND"), status.HTTP_404_NOT_FOUND
     else:
         return get_status(200, "Successfully Deleted")
-        
+
 def get_problem(problem_id):
     """
     Problems
@@ -89,7 +89,7 @@ def update_problem(problem_id, version, problem):
         #update the version
         new_version = version + 1
         body = GenericObject.from_dict(connexion.request.get_json())
-        if db.posts.find_one_and_update({"problem_id":str(uid), "version": str(version)}, {"$set": {"body": body, "version": new_version}}) is None:
+        if db.posts.find_one_and_update({"problem_id":str(uid), "version": version}, {"$set": {"body": body, "version": new_version}}) is None:
             return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
         #need to write better messages to return for a success
         return jsonify(new_version)
@@ -109,4 +109,12 @@ def get_specific_key(problem_id, version, key):
 
     :rtype: Body
     """
-    return 'do some magic!'
+    ret_object = db.posts.find_one({"problem_id": str(problem_id), "version": version})
+    #run a check to see if the uid exists
+    if ret_object is None:
+        return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+    #if the uid doesn't exist then just go ahead return error status
+    value = ret_object['body'][key]
+    if value is None:
+        return get_status(405, "Invalid Key")
+    return jsonify(value)
