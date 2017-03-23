@@ -151,6 +151,6 @@ def get_specific_key(problem_id, version, key):
         print(value)
         if value is None:
             print("3")
-            return get_status(417, "Invalid Key"), HTTP_417_EXPECTATION_FAILED
+            return get_status(417, "Invalid Key"), status.HTTP_417_EXPECTATION_FAILED
     
     return jsonify({key: value})
