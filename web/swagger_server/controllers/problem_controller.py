@@ -42,7 +42,6 @@ def delete_problem(problem_id):
     This removes the problem by the given ID 
     :param problem_id: The id of the problem being manipulated
     :type problem_id: int
-
     :rtype: None
     """
     if db.posts.delete_many({"problem_id": str(problem_id)}).deleted_count == 0:
@@ -56,7 +55,6 @@ def get_problem(problem_id):
     Returns most updated problem 
     :param problem_id: The id of the problem being manipulated
     :type problem_id: int
-
     :rtype: Problem
     """
     ret_object = db.posts.find_one({"problem_id": str(problem_id)})
@@ -66,6 +64,22 @@ def get_problem(problem_id):
     #if the uid doesn't exist then just go ahead return error status
     #ret_object.pop('problem_id', 0)
     return jsonify({"body": ret_object['body'], "version": ret_object['version']})
+    
+def get_version(problem_id):
+    """
+    Problems
+    Returns current version
+    :param problem_id: The id of the problem being manipulated
+    :type problem_id: int
+    :rtype: Problem
+    """
+    ret_object = db.posts.find_one({"problem_id": str(problem_id)})
+    #run a check to see if the uid exists
+    if ret_object is None:
+        return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+    #if the uid doesn't exist then just go ahead return error status
+    #ret_object.pop('problem_id', 0)
+    return jsonify({"version": ret_object['version']})  
 
 
 def update_problem(problem_id, version, problem):
@@ -78,7 +92,6 @@ def update_problem(problem_id, version, problem):
     :type version: int
     :param problem: Problem object that needs to be updated.
     :type problem: dict | bytes
-
     :rtype: int
     """
     #this checks if incoming data is valid json and for valid uid
@@ -96,17 +109,17 @@ def update_problem(problem_id, version, problem):
         ret_object = db.posts.find_one({"problem_id": str(problem_id)})
         print("after ret_obj")
         if ret_object is None:
-        	print("1")
-        	return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+            print("1")
+            return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
         elif ret_object['version'] != version:
-        	print("2")
-        	return jsonify({"version": ret_object['version']}), status.HTTP_412_PRECONDITION_FAILED
+            print("2")
+            return jsonify({"version": ret_object['version']}), status.HTTP_412_PRECONDITION_FAILED
         else:
-        	print("3")
-        	db.posts.find_one_and_update({"problem_id":str(problem_id), "version": version}, {"$set": {"body": problem, "version": new_version}})
+            print("3")
+            db.posts.find_one_and_update({"problem_id":str(problem_id), "version": version}, {"$set": {"body": problem, "version": new_version}})
 
         print("after if")
-		#need to write better messages to return for a success
+        #need to write better messages to return for a success
         return jsonify({"version": new_version})
     except ValueError:
         print("error")
@@ -122,15 +135,22 @@ def get_specific_key(problem_id, version, key):
     :type version: int
     :param key: The key within the body of the problem being manipulated
     :type key: str
-
     :rtype: Body
     """
-    ret_object = db.posts.find_one({"problem_id": str(problem_id), "version": version})
+    ret_object = db.posts.find_one({"problem_id": str(problem_id)})
     #run a check to see if the uid exists
     if ret_object is None:
+        print("1")
         return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
-    #if the uid doesn't exist then just go ahead return error status
-    value = ret_object['body'][key]
-    if value is None:
-        return get_status(405, "Invalid Key")
+    elif ret_object['version'] != version:
+        print("2")
+        return jsonify({"version": ret_object['version']}), status.HTTP_412_PRECONDITION_FAILED
+    else:
+        value = ret_object['body'].get(key, None)
+        print("value is:")
+        print(value)
+        if value is None:
+            print("3")
+            return get_status(417, "Invalid Key"), HTTP_417_EXPECTATION_FAILED
+    
     return jsonify({key: value})

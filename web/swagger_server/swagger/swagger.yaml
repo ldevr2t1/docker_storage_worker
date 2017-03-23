@@ -25,7 +25,10 @@ paths:
         200:
           description: "An array of Problem IDs"
           schema:
-            $ref: "#/definitions/get_pid"
+            type: "array"
+            items:
+              type: "integer"
+              format: "int32"
         default:
           description: "Unexpected error"
           schema:
@@ -50,7 +53,7 @@ paths:
         description: "Problem object that needs to be updated."
         required: true
         schema:
-          $ref: "#/definitions/Body"
+          $ref: "#/definitions/Problem"
       responses:
         200:
           description: "The id of the new problem generated"
@@ -86,7 +89,7 @@ paths:
           description: "Unexpected error"
           schema:
             $ref: "#/definitions/Error"
-      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"  
     delete:
       tags:
       - "Problem"
@@ -110,7 +113,35 @@ paths:
           description: "Invalid ID supplied"
         404:
           description: "Problem not found"
-      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"  
+  /id={problem_id}/version/:
+      get:
+        tags:
+        - "Problem"
+        summary: "Problems"
+        description: "Returns current version of a problem\n"
+        operationId: "get_version"
+        produces:
+        - "application/json"
+        - "application/xml"
+        parameters:
+        - name: "problem_id"
+          in: "path"
+          description: "The id of the problem being manipulated"
+          required: true
+          type: "integer"
+          format: "int32"
+        responses:
+          200:
+            description: "The version number"
+            schema:
+              type: "integer"
+              format: "int32"
+          default:
+            description: "Unexpected error"
+            schema:
+              $ref: "#/definitions/Error"
+        x-swagger-router-controller: "swagger_server.controllers.problem_controller"          
   /id={problem_id}/ver={version}/:
     put:
       tags:
@@ -136,7 +167,7 @@ paths:
         description: "The version of the problem being manipulated"
         required: true
         type: "integer"
-        format: "int32"
+        format: "int32"        
       - in: "body"
         name: "problem"
         description: "Problem object that needs to be updated."
@@ -147,17 +178,20 @@ paths:
         200:
           description: "The new version number for the problem"
           schema:
-            $ref: "#/definitions/Version"
+            type: "integer"
+            format: "int32"
         404:
           description: "Problem not found"
         412:
-          description: "Validation exception"
+          description: "Incorrect version number"
           schema:
-            $ref: "#/definitions/Version"
+            description: "latest version number"
+            type: "integer"
+            format: "int32"
         500:
           description: "Incorrect JSON"
-      x-swagger-router-controller: "swagger_server.controllers.problem_controller"
-  /id={problem_id}/ver={version}/key={key}:
+      x-swagger-router-controller: "swagger_server.controllers.problem_controller"  
+  /id={problem_id}/ver={version}/key={key}:      
     get:
       tags:
       - "Key"
@@ -179,31 +213,29 @@ paths:
         description: "The version of the problem being manipulated"
         required: true
         type: "integer"
-        format: "int32"
+        format: "int32"  
       - name: "key"
         in: "path"
         description: "The key within the body of the problem being manipulated"
         required: true
-        type: "string"
+        type: "string"         
       responses:
         200:
           description: "A value from a specific key"
           schema:
             $ref: "#/definitions/Body"
-        default:
-          description: "Unexpected error"
+        404:
+          description: "Problem not found"
+        412:
+          description: "Incorrect version number"
           schema:
-            $ref: "#/definitions/Error"
+            description: "latest version number"
+            type: "integer"
+            format: "int32"
+        417:
+          description: "Invalid Key"
       x-swagger-router-controller: "swagger_server.controllers.problem_controller"
 definitions:
-  get_pid:
-    type: "object"
-    properties:
-      problem_id:
-        type: "array"
-        items:
-              type: "integer"
-              format: "int32"
   Body:
     type: "object"
   Problem:
@@ -214,12 +246,6 @@ definitions:
         format: "int32"
       body:
         $ref: "#/definitions/Body"
-  Version:
-    type: "object"
-    properties:
-      version:
-        type: "integer"
-        format: "int32"
   Error:
     type: "object"
     properties:
