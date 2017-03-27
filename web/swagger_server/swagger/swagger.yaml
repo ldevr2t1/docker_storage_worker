@@ -4,7 +4,7 @@ info:
   description: "Stores and Retrieves information needed"
   version: "2.0.0"
   title: "Team 1 Storage API"
-basePath: "/v2"
+basePath: "/v3"
 schemes:
 - "http"
 paths:
