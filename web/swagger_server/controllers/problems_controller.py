@@ -14,6 +14,10 @@ from flask.ext.api import status
 from pymongo import MongoClient
 #from . import utility
 
+#____FOR ONLINE_______
+# client = MongoClient("db",27017)
+#____________________
+
 #____FOR LOCAL_______
 client = MongoClient()
 #_____________________
@@ -30,19 +34,22 @@ def add_problem(problem):
     
     :param problem: Problem object that needs to be updated.
     :type problem: dict | bytes
-
     :rtype: int
     """
     try:
         str_body = str(problem.decode("utf-8")).replace('\'', '\"')
         json.loads(str_body)
+        db_size = db.posts.count()+1
+        print(str_body)
         problem = Body.from_dict(connexion.request.get_json())
-        problem_id = problem['problem_id']
-        if(db.posts.find_one({"problem_id":str(problem_id)}) == None):
-            insert_json(problem_id, 0, problem['body'])
-            return jsonify({"problem_id": problem_id})
-        else:
-            return get_status(404, "COULD NOT FIND"), status.HTTP_404_NOT_FOUND
+        for i in range(1, db_size):
+            if(db.posts.find_one({"problem_id":str(i)}) == None):
+                insert_json(i, 0, problem)
+                return jsonify({"problem_id": i})
+            print(i)
+        insert_json(db_size, 0, problem)
+        #print("out of func")
+        return jsonify({"problem_id": db_size})
     except ValueError:
         print("error")
         return get_status(500, "Invalid JSON"), status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -52,7 +59,6 @@ def get_problems():
     """
     Problems
     Returns a list of all of the Problems generated. This can be an empty list. 
-
     :rtype: List[int]
     """
     array = []

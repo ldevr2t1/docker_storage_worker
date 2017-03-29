@@ -14,6 +14,10 @@ from flask import jsonify
 from flask.ext.api import status
 from pymongo import MongoClient
 
+#____FOR ONLINE_______
+# client = MongoClient("db",27017)
+#____________________
+
 #____FOR LOCAL_______
 client = MongoClient()
 #____________________
@@ -34,7 +38,7 @@ def get_status(status, message):
 
 
 def root_get():
-    return 'This is version 2.0'
+    return 'This is version 3.0'
 
 def delete_problem(problem_id):
     """

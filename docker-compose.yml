@@ -9,3 +9,7 @@ web:
 db:
   image: mongo:3.0.2
   command: mongod --dbpath /data/db --smallfiles
+  volumes:
+      - "db-data:/data/db"
+volumes:
+  db-data:

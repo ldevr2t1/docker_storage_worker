@@ -1,0 +1,36 @@
+#specify the versuion capabilities
+version: "3"
+
+#specify the services
+services:
+  #storage
+  docker_storage:
+    image: "docker_storage"
+    build: ./web
+    depends_on:
+      - db
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"  
+    environment:
+      - PYTHONUNBUFFERED=0
+    #detail placement on the server
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        constraints: [node.role == worker]
+  db:
+    image: mongo:3.0.2
+    command: mongod --dbpath /data/db --smallfiles
+    volumes:
+        - "db-data:/data/db"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  db-data:
+
+
